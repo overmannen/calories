@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS athletes (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    calories INTEGER DEFAULT 0
+);
