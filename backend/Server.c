@@ -23,7 +23,7 @@ server_t server_constructor(int domain, int service, int protocol,
 
     if (server.socket < 0)
     {
-        perror("Failed to connect soccet");
+        perror("Failed to connect socket");
         exit(1);
     }
 

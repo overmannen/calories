@@ -31,6 +31,6 @@ down:
 logs:
 	docker-compose logs -f
 
-restart: down up
+restart: down all up
 
 .PHONY: all clean run up down logs restart

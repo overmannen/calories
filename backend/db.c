@@ -93,7 +93,7 @@ char *format_result(PGresult *res)
     if (!response)
     {
         PQclear(res);
-        return NULL;
+        exit(1);
     }
     char *ptr = response;
     memset(response, 0, 4096);
@@ -138,11 +138,10 @@ int db_execute(PGconn *conn, char *query)
 
         PQfinish(conn);
 
-        return 1;
+        return -1;
     }
 
     printf("Query exucted successfully\n");
-
     int rows = atoi(PQcmdTuples(res));
     PQclear(res);
 

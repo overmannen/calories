@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   postgres:
     image: postgres:15-alpine
@@ -17,6 +15,12 @@ services:
       interval: 2s
       timeout: 3s
       retries: 5
+    command: >
+      postgres
+      -c log_statement=all
+      -c log_destination=stderr
+      -c logging_collector=off
+      -c log_line_prefix='%m [%p] %u@%d '
 
   server:
     build: .

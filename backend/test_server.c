@@ -26,11 +26,18 @@ void launch(server_t *server)
         }
         buffer[bytes] = '\0';
 
+        printf("=== RECEIVED REQUEST ===\n%s\n=== END ===\n", buffer);
+
         handle_request(client, buffer);
 
         close(client);
     }
 };
+
+const char *BUILD_INFO =
+    "Built from:\n"
+    "  file: " __FILE__ "\n"
+    "  date: " __DATE__ " " __TIME__ "\n";
 
 int main()
 {
@@ -38,6 +45,12 @@ int main()
     {
         perror("Error connecting to db");
     }
+
+    setbuf(stdout, NULL);
+    setbuf(stderr, NULL);
+
+    printf("%s\n", BUILD_INFO);
+    fflush(stdout);
 
     server_t server = server_constructor(AF_INET, SOCK_STREAM, 0, INADDR_ANY, 3000, 10, launch);
     server.launch(&server);
