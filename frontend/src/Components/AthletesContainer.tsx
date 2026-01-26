@@ -1,6 +1,7 @@
 import { Athletes } from "./Athletes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { handleAddAthlete } from "../ahtletes";
+import { Leaderboard } from "./Leaderboard";
 
 export const AthletesContainer = () => {
   const queryClient = useQueryClient();
@@ -29,6 +30,7 @@ export const AthletesContainer = () => {
         </button>
       </form>
       <Athletes />
+      <Leaderboard />
     </div>
   );
 };

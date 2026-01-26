@@ -25,7 +25,7 @@ PGconn *db_connect(void)
         printf("Error while connecting to the database server: %s\n", PQerrorMessage(conn));
         PQfinish(conn);
 
-        exit(1);
+        return NULL;
     }
 
     printf("Connection Established\n");
@@ -53,7 +53,7 @@ PGresult *db_select(PGconn *conn, char *query)
 
         PQfinish(conn);
 
-        exit(1);
+        return NULL;
     }
 
     printf("Query exucted successfully\n");
@@ -93,7 +93,7 @@ char *format_result(PGresult *res)
     if (!response)
     {
         PQclear(res);
-        exit(1);
+        return NULL;
     }
     char *ptr = response;
     memset(response, 0, 4096);

@@ -16,8 +16,8 @@ void handle_request(int client, char *request)
         printf("options");
         fflush(stdout);
         if (dprintf(client, "HTTP/1.1 204 No Content\r\n"
-                            "Access-Control-Allow-Origin: http://localhost:5173\r\n" // Må fjernes i prod
-                            "Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS\r\n"
+                            "Access-Control-Allow-Origin: http://localhost:5173\r\n"
+                            "Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS\r\n"
                             "Access-Control-Allow-Headers: Content-Type\r\n"
                             "\r\n") < 0)
         {
@@ -44,19 +44,32 @@ void handle_request(int client, char *request)
         {
             handle_add_athlete(client, body);
         }
+    }
+
+    else if (strcmp(method, "PATCH") == 0)
+    {
+        char *body = strstr(request, "\r\n\r\n");
+        printf("patch");
+        fflush(stdout);
+
+        if (!body)
+        {
+            send_400(client);
+            return;
+        }
+
+        body += 4;
+        int id;
+        if (sscanf(path, "/api/athlete/%d", &id) == 1 || sscanf(path, "/api/athlete/%d/", &id) == 1)
+        {
+            update_athlete(client, id, body);
+        }
         else
         {
-            int id;
-            if (sscanf(path, "/api/athlete/%d", &id) == 1)
-            {
-                update_athlete(client, id, body);
-            }
-            else
-            {
-                send_404(client);
-            }
+            send_404(client);
         }
     }
+
     else if (strcmp(method, "GET") == 0)
     {
         if (strcmp(path, "/api/status") == 0)
@@ -70,6 +83,15 @@ void handle_request(int client, char *request)
         else
         {
             send_404(client);
+        }
+    }
+
+    else if (strcmp(method, "DELETE") == 0)
+    {
+        int id;
+        if (sscanf(path, "/api/athlete/%d", &id) == 1 || sscanf(path, "/api/athlete/%d/", &id) == 1)
+        {
+            delete_athlete(client, id);
         }
     }
     else
@@ -104,7 +126,7 @@ void handle_status(int client)
 
 void send_404(int client)
 {
-    char *json = "{ \"error\": \"Not found\" }";
+    char *json = "{ \"error\": \"Not found_lolefwefwqfqwf\" }";
 
     send_response(client, 404, "Not Found", json);
 }
@@ -142,13 +164,30 @@ void handle_add_athlete(int client, char *body)
 
 void update_athlete(int client, int id, char *body)
 {
-    int calories;
-    sscanf(body, "calories=%d", calories);
 
     char query[512];
     snprintf(query, sizeof(query),
-             "UPDATE athletes SET calories = %d WHERE id = '%d'",
-             id);
+             "SELECT calories FROM athletes WHERE id = %d::integer", id);
+    PGresult *res = db_select(global_conn, query);
+
+    if (!res)
+    {
+        send_400(client);
+        return;
+    }
+
+    int Oldcalories = atoi(PQgetvalue(res, 0, 0));
+
+    int CaloriesTooAdd;
+
+    sscanf(body, "calories=%d", &CaloriesTooAdd);
+
+    int newCalories = Oldcalories + CaloriesTooAdd;
+
+    memset(query, 0, 512);
+    snprintf(query, sizeof(query),
+             "UPDATE athletes SET calories = %d WHERE id = %d::integer",
+             newCalories, id);
     if (db_execute(global_conn, query) < 0)
     {
         send_400(client);
@@ -157,7 +196,7 @@ void update_athlete(int client, int id, char *body)
 
     char response[512];
     snprintf(response, sizeof(response),
-             "{\"message\": \"Ahtlete with id: %d was successfully updated\"}", id);
+             "{\"message\": \"Athlete with id: %d was successfully updated\"}", id);
 
     send_response(client, 200, "OK", response);
 }
@@ -180,4 +219,23 @@ void get_athletes(int client)
 
     send_response(client, 200, "OK", response);
     free(response);
+}
+
+void delete_athlete(int client, int id)
+{
+    char query[512];
+    snprintf(query, sizeof(query),
+             "DELETE FROM athletes WHERE id = %d", id);
+
+    if (db_execute(global_conn, query) < 0)
+    {
+        send_400(client);
+        return;
+    }
+
+    char response[512];
+    snprintf(response, sizeof(response),
+             "{\"message\": \"Athlete with id: %d was successfully deleted\"}", id);
+
+    send_response(client, 200, "OK", response);
 }

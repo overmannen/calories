@@ -31,3 +31,28 @@ export const handleAddAthlete = async (name: string) => {
     throw new Error("Kunne ikke legge til utøver");
   }
 };
+
+export const handleUpdateCalories = async (id: number, calories: string) => {
+  const response = await fetch(`/api/athlete/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: `calories=${encodeURIComponent(calories)}`,
+  });
+  if (!response.ok) {
+    throw new Error("Kunne ikke oppdatere utøver");
+  }
+};
+
+export const handleDeleteAthlete = async (id: number) => {
+  const response = await fetch(`/api/athlete/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Kunne ikke oppdatere utøver");
+  }
+};
