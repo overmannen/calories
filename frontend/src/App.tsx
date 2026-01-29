@@ -2,11 +2,9 @@ import { AthletesContainer } from "./Components/AthletesContainer";
 
 function App() {
   return (
-    <>
-      <div>
-        <AthletesContainer />
-      </div>
-    </>
+    <div className="app-container">
+      <AthletesContainer />
+    </div>
   );
 }
 

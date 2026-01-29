@@ -61,35 +61,44 @@ export const Athletes = () => {
     handleUpdateCaloriesMutation.mutate({ id, calories });
   };
 
-  if (isLoading) return <p>Laster utøvere...</p>;
-  if (error) return <p>Noe gikk galt</p>;
+  if (isLoading) return <p className="loading-message">Laster utøvere...</p>;
+  if (error) return <p className="error-message">Noe gikk galt</p>;
 
   const sortedAthletes = athletes.sort((a, b) => a.id - b.id);
 
   return (
-    <div>
+    <div className="athletes-section">
       <h1>Utøvere</h1>
-      <ul>
+      <ul className="athletes-list">
         {sortedAthletes.map((a) => (
-          <li key={a.id}>
-            <strong>{a.name}</strong>: {a.calories} kcal{" "}
-            <input
-              type="number"
-              placeholder="Legg til kalorier"
-              value={inputCalories[a.id] || ""}
-              onChange={(e) => handleInputChange(a.id, e.target.value)}
-            />
-            <button
-              onClick={() => handleCaloriesUpdate(a.id)}
-              disabled={handleUpdateCaloriesMutation.isPending}
-            >
-              {handleUpdateCaloriesMutation.isPending
-                ? "Lagrer..."
-                : "Oppdater"}
-            </button>
-            <button onClick={() => handleDeleteAthleteMutation.mutate(a.id)}>
-              Slett utøver
-            </button>
+          <li key={a.id} className="athlete-item">
+            <div className="athlete-info">
+              <span className="athlete-name">{a.name}</span>
+            </div>
+            <div className="calorie-input-group">
+              <input
+                type="number"
+                placeholder="Legg til kalorier"
+                value={inputCalories[a.id] || ""}
+                onChange={(e) => handleInputChange(a.id, e.target.value)}
+                className="calorie-input"
+              />
+              <button
+                onClick={() => handleCaloriesUpdate(a.id)}
+                disabled={handleUpdateCaloriesMutation.isPending}
+                className="btn-update"
+              >
+                {handleUpdateCaloriesMutation.isPending
+                  ? "Lagrer..."
+                  : "Oppdater"}
+              </button>
+              <button
+                onClick={() => handleDeleteAthleteMutation.mutate(a.id)}
+                className="btn-delete"
+              >
+                Slett
+              </button>
+            </div>
           </li>
         ))}
       </ul>

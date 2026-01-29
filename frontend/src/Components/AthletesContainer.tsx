@@ -21,15 +21,27 @@ export const AthletesContainer = () => {
     addAthleteMutation.mutate(name);
     e.currentTarget.reset();
   };
+
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="name" required />
-        <button type="submit" disabled={addAthleteMutation.isPending}>
-          {addAthleteMutation.isPending ? "Legger til..." : "Legg til utøver"}
-        </button>
-      </form>
-      <Athletes />
+    <div className="athletes-container">
+      <div className="left-column">
+        <form onSubmit={handleSubmit} className="add-athlete-form">
+          <input
+            type="text"
+            name="name"
+            placeholder="Navn på utøver..."
+            required
+          />
+          <button
+            type="submit"
+            disabled={addAthleteMutation.isPending}
+            className="btn-primary"
+          >
+            {addAthleteMutation.isPending ? "Legger til..." : "Legg til utøver"}
+          </button>
+        </form>
+        <Athletes />
+      </div>
       <Leaderboard />
     </div>
   );
